@@ -276,17 +276,23 @@ pub fn open_dialog(params: DialogParams) -> Result<OpenDialogResult, DialogError
 /// # Examples
 ///
 /// ```
+/// # fn main() -> Result<(), wfd::DialogError> {
 /// // An entirely default Save File dialog box with no customization
 /// let result = wfd::save_dialog(Default::default())?;
+/// #    Ok(())
+/// # }
 /// ```
 /// ```
-/// // A Save File dialog box with a custom dialog title and file types
+/// # fn main() -> Result<(), wfd::DialogError> {
+/// // A Save File dialog box with a custom dialog title and file types///
 /// let params = wfd::DialogParams {
 ///    title: "My custom save file dialog",
 ///    file_types: vec![("JPG Files", "*.jpg;*.jpeg"), ("PDF Files", "*.pdf")],
 ///    ..Default::default()
 /// };
 /// let result = wfd::save_dialog(params)?;
+/// #    Ok(())
+/// # }
 /// ```
 ///
 /// # Errors
