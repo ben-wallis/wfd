@@ -20,8 +20,9 @@ use winapi::{
     um:: {
         combaseapi::{CoCreateInstance, CoInitializeEx, CoTaskMemFree, CoUninitialize, CLSCTX_ALL},
         objbase::{COINIT_APARTMENTTHREADED, COINIT_DISABLE_OLE1DDE},
+        objidl::{IBindCtx},
         shobjidl::{IFileDialog, IFileOpenDialog, IFileSaveDialog, IShellItemArray},
-        shobjidl_core::{CLSID_FileOpenDialog, CLSID_FileSaveDialog, IShellItem, SFGAOF, SHCreateItemFromParsingName, SIGDN_FILESYSPATH},
+        shobjidl_core::{CLSID_FileOpenDialog, CLSID_FileSaveDialog, IShellItem, SFGAOF, SIGDN_FILESYSPATH},
         shtypes::COMDLG_FILTERSPEC,
     }
 };
@@ -35,6 +36,18 @@ pub use winapi::um::shobjidl::{
     FOS_OVERWRITEPROMPT, FOS_PATHMUSTEXIST, FOS_PICKFOLDERS, FOS_SHAREAWARE, FOS_STRICTFILETYPES,
     FOS_SUPPORTSTREAMABLEITEMS,
 };
+use winapi::um::winnt::PCWSTR;
+use winapi::shared::guiddef::REFIID;
+
+// TODO: Use winapi once https://github.com/retep998/winapi-rs/pull/820 is completed
+extern "system" {
+    fn SHCreateItemFromParsingName(
+        pszPath: PCWSTR,
+        pbc: *mut IBindCtx,
+        riid: REFIID,
+        ppv: *mut *mut c_void
+    ) -> HRESULT;
+}
 
 macro_rules! com {
     ($com_expr:expr, $method_name:expr ) => { com(|| unsafe { $com_expr }, $method_name) };
