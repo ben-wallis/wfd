@@ -1,0 +1,63 @@
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+      
+    - name: Clippy
+      run: cargo clippy --all-targets --all-features -- -D warnings
+      
+  build_stable-msvc:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Build (stable-msvc)
+      run: cargo +stable-msvc build
+      
+  build_stable-gnu:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Install Rust stable-gnu
+      run:  rustup toolchain install --no-self-update stable-gnu
+    
+    - name: Build (stable-gnu)
+      run: cargo +stable-gnu build
+
+  build_nightly-msvc:
+    runs-on: windows-latest
+    
+    steps:  
+    - name: Checkout
+      uses: actions/checkout@v1
+      
+    - name: Install Rust (nightly-msvc)
+      run: rustup toolchain install --no-self-update nightly-msvc
+        
+    - name: Build (nightly-msvc)
+      run: cargo +nightly-msvc build
+
+  build_nightly-gnu:
+    runs-on: windows-latest
+    
+    steps:  
+    - name: Checkout
+      uses: actions/checkout@v1
+      
+    - name: Install Rust (nightly-gnu)
+      run: rustup toolchain install --no-self-update nightly-gnu
+        
+    - name: Build (nightly-gnu)
+      run: cargo +nightly-gnu build
