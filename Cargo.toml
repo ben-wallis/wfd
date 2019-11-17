@@ -15,6 +15,5 @@ name = "wfd"
 path = "src/lib.rs"
 
 [dependencies]
-# winapi = { version = "^0", features = ["winuser", "objbase", "shobjidl", "shobjidl_core", "winerror", "shellapi"] }
-winapi = { git = "https://github.com/ben-wallis/winapi-rs", branch = "add_SHCreateItemFromParsingName", features = ["winuser", "objbase", "shobjidl", "shobjidl_core", "winerror", "shellapi"] }
+winapi = { version = ">=0.3.8", features = ["winuser", "objbase", "shobjidl", "shobjidl_core", "winerror", "shellapi"] }
 libc = "0.2"
