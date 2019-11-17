@@ -11,9 +11,8 @@ keywords = ["file", "open", "save", "dialog", "windows"]
 categories = ["os::windows-apis"]
 exclude = [".github/*"]
 
-[lib]
-name = "wfd"
-path = "src/lib.rs"
+[package.metadata.docs.rs]
+default-target = "x86_64-pc-windows-msvc"
 
 [dependencies]
 winapi = { version = ">=0.3.8", features = ["winuser", "objbase", "shobjidl", "shobjidl_core", "winerror", "shellapi"] }
