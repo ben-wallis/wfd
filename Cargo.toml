@@ -9,6 +9,7 @@ repository = "https://www.github.com/ben-wallis/wfd"
 readme = "README.md"
 keywords = ["file", "open", "save", "dialog", "windows", "winapi", "win32"]
 categories = ["os::windows-apis"]
+exclude = [".github/*"]
 
 [lib]
 name = "wfd"
