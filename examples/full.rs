@@ -4,7 +4,7 @@ use wfd::{DialogParams, FOS_ALLOWMULTISELECT, DialogError};
 
 fn main() {
     let params = DialogParams {
-        file_types: vec![("DLL Files", "*.dll"), ("Executable  Files", "*.exe;*.com;*.scr")],
+        file_types: vec![("DLL Files", "*.dll"), ("Executable Files", "*.exe;*.com;*.scr")],
         default_extension: "dll",
         default_folder: r"C:\Windows\System32",
         file_name: "win32k.sys",
