@@ -1,6 +1,6 @@
 [package]
 name = "wfd"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Ben Wallis <atomyc+github@gmail.com>"]
 description = "A simple to use abstraction over the Open and Save dialogs in the Windows API"
 edition = "2018"
