@@ -41,7 +41,7 @@ pub use winapi::um::shobjidl::{
 
 // TODO: Use winapi once https://github.com/retep998/winapi-rs/pull/820 is completed
 extern "system" {
-    pub fn SHCreateItemFromParsingName(
+    fn SHCreateItemFromParsingName(
         pszPath: PCWSTR,
         pbc: *mut IBindCtx,
         riid: REFIID,
