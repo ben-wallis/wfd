@@ -1,5 +1,6 @@
 # wfd 
 [![Build Status](https://github.com/ben-wallis/wfd/workflows/Build/badge.svg)](https://github.com/ben-wallis/wfd/actions)
+[![Crates.io](https://img.shields.io/crates/v/wfd)](https://crates.io/crates/wfd)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 This crate provides a simple to use abstraction over the Open and Save dialogs in the Windows API, usable under both GNU and MSVC toolchains, with minimal dependencies.
