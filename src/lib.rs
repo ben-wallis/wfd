@@ -216,7 +216,7 @@ pub fn open_dialog(params: DialogParams) -> Result<OpenDialogResult, DialogError
         ), "CoInitializeEx")?;
 
     // Create IFileOpenDialog instance
-    let mut file_open_dialog: *mut IFileOpenDialog = unsafe { std::mem::zeroed() };
+    let mut file_open_dialog: *mut IFileOpenDialog = null_mut();
     com!(CoCreateInstance(
             &CLSID_FileOpenDialog,
             null_mut(),
@@ -233,7 +233,7 @@ pub fn open_dialog(params: DialogParams) -> Result<OpenDialogResult, DialogError
 
     // Get the item(s) that the user selected in the dialog
     // IFileOpenDialog::GetResults
-    let mut shell_item_array: *mut IShellItemArray = unsafe { std::mem::zeroed() };
+    let mut shell_item_array: *mut IShellItemArray = null_mut();
     com!(file_open_dialog.GetResults(&mut shell_item_array), "IFileOpenDialog::GetResults")?;
 
     let shell_item_array = unsafe { &*shell_item_array };
@@ -245,7 +245,7 @@ pub fn open_dialog(params: DialogParams) -> Result<OpenDialogResult, DialogError
     let mut file_paths: Vec<PathBuf> = vec![];
     for i in 0..item_count {
         // IShellItemArray::GetItemAt
-        let mut shell_item: *mut IShellItem = unsafe { std::mem::zeroed() };
+        let mut shell_item: *mut IShellItem = null_mut();
         com!(shell_item_array.GetItemAt(i, &mut shell_item), "IShellItemArray::GetItemAt")?;
         let shell_item = unsafe { &*shell_item };
 
@@ -326,7 +326,7 @@ pub fn save_dialog(params: DialogParams) -> Result<SaveDialogResult, DialogError
 
     // Create IFileSaveDialog instance
     let mut file_save_dialog: *mut IFileSaveDialog;
-    file_save_dialog = unsafe { std::mem::zeroed() };
+    file_save_dialog = null_mut();
     com!(CoCreateInstance(
             &CLSID_FileSaveDialog,
             null_mut(),
@@ -355,7 +355,7 @@ pub fn save_dialog(params: DialogParams) -> Result<SaveDialogResult, DialogError
     show_dialog(file_save_dialog)?;
 
     // IFileDialog::GetResult
-    let mut shell_item: *mut IShellItem = unsafe { std::mem::zeroed() };
+    let mut shell_item: *mut IShellItem = null_mut();
     com!(file_save_dialog.GetResult(&mut shell_item), "IFileDialog::GetResult")?;
     let shell_item = unsafe { &*shell_item };
     let file_name = get_shell_item_display_name(&shell_item)?;
