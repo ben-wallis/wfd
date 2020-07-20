@@ -4,6 +4,8 @@ extern crate winapi;
 
 use crate::winapi::Interface;
 
+use std::ffi::OsString;
+use std::os::windows::ffi::OsStringExt;
 use std::path::PathBuf;
 use std::ptr::null_mut;
 use std::slice;
@@ -508,12 +510,12 @@ fn get_file_type_index(file_dialog: &IFileDialog) -> Result<u32, DialogError> {
     Ok(selected_filter_index)
 }
 
-fn get_shell_item_display_name(shell_item: &IShellItem) -> Result<String, DialogError> {
+fn get_shell_item_display_name(shell_item: &IShellItem) -> Result<OsString, DialogError> {
     let mut display_name: LPWSTR = null_mut();
     // IShellItem::GetDisplayName
     com!(shell_item.GetDisplayName(SIGDN_FILESYSPATH, &mut display_name), "IShellItem::GetDisplayName")?;
     let slice = unsafe { slice::from_raw_parts(display_name, wcslen(display_name)) };
-    let result = string_from_utf16(slice);
+    let result = OsString::from_wide(slice);
 
     // Free non-owned allocation
     unsafe { CoTaskMemFree(display_name as LPVOID) };
@@ -535,8 +537,4 @@ where
     } else {
         Ok(())
     }
-}
-
-fn string_from_utf16(utf16: &[u16]) -> String {
-    String::from_utf16(&utf16).unwrap().to_string()
 }
