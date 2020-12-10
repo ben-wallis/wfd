@@ -268,9 +268,9 @@ pub fn open_dialog(params: DialogParams) -> Result<OpenDialogResult, DialogError
         CoUninitialize();
     }
 
-    file_paths.iter().next().cloned().map(|x| {
+    file_paths.get(0).cloned().map(|x| {
         OpenDialogResult {
-            selected_file_path: x.clone(),
+            selected_file_path: x,
             selected_file_paths: file_paths,
             selected_file_type_index: selected_filter_index
         }
