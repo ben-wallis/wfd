@@ -1,6 +1,6 @@
 extern crate wfd;
 
-use wfd::{DialogParams};
+use wfd::DialogParams;
 
 fn main() {
     let params = DialogParams {

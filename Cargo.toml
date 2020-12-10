@@ -15,5 +15,5 @@ exclude = [".github/*"]
 default-target = "x86_64-pc-windows-msvc"
 
 [dependencies]
-winapi = { version = ">=0.3.8", features = ["winuser", "objbase", "shobjidl", "shobjidl_core", "winerror", "shellapi"] }
+winapi = { version = ">=0.3.9", features = ["winuser", "objbase", "shobjidl", "shobjidl_core", "winerror", "shellapi"] }
 libc = "0.2"

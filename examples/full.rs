@@ -1,6 +1,6 @@
 extern crate wfd;
 
-use wfd::{DialogParams, FOS_ALLOWMULTISELECT, DialogError};
+use wfd::{DialogError, DialogParams, FOS_ALLOWMULTISELECT};
 
 fn main() {
     let params = DialogParams {
@@ -13,7 +13,7 @@ fn main() {
         ok_button_label: "Custom OK",
         options: FOS_ALLOWMULTISELECT,
         title: "Test open file dialog",
-        .. Default::default()
+        ..Default::default()
     };
 
     match wfd::open_dialog(params) {
@@ -23,11 +23,12 @@ fn main() {
             }
         }
         Err(e) => match e {
+            DialogError::HResultFailed { hresult, error_method} => {
+                println!("HResult Failed - HRESULT: {:X}, Method: {}", hresult, error_method);
+            }
+            DialogError::UnsupportedFilepath => { println!("Unsupported file path"); }
             DialogError::UserCancelled => {
                 println!("User cancelled dialog");
-            }
-            DialogError::HResultFailed { hresult, error_method } => {
-                println!("HResult Failed - HRESULT: {:X}, Method: {}", hresult, error_method);
             }
         },
     }

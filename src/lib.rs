@@ -15,7 +15,6 @@ use libc::wcslen;
 use winapi::{
     ctypes::c_void,
     shared::{
-        guiddef::REFIID,
         minwindef::LPVOID,
         ntdef::LPWSTR,
         winerror::{HRESULT, SUCCEEDED}
@@ -23,11 +22,9 @@ use winapi::{
     um:: {
         combaseapi::{CoCreateInstance, CoInitializeEx, CoTaskMemFree, CoUninitialize, CLSCTX_ALL},
         objbase::{COINIT_APARTMENTTHREADED, COINIT_DISABLE_OLE1DDE},
-        objidl::IBindCtx,
         shobjidl::{IFileDialog, IFileOpenDialog, IFileSaveDialog, IShellItemArray},
-        shobjidl_core::{CLSID_FileOpenDialog, CLSID_FileSaveDialog, IShellItem, SFGAOF, SIGDN_FILESYSPATH},
+        shobjidl_core::{CLSID_FileOpenDialog, CLSID_FileSaveDialog, IShellItem, SFGAOF, SHCreateItemFromParsingName, SIGDN_FILESYSPATH},
         shtypes::COMDLG_FILTERSPEC,
-        winnt::PCWSTR
     }
 };
 
@@ -40,16 +37,6 @@ pub use winapi::um::shobjidl::{
     FOS_OVERWRITEPROMPT, FOS_PATHMUSTEXIST, FOS_PICKFOLDERS, FOS_SHAREAWARE, FOS_STRICTFILETYPES,
     FOS_SUPPORTSTREAMABLEITEMS,
 };
-
-// TODO: Use winapi once https://github.com/retep998/winapi-rs/pull/820 is completed
-extern "system" {
-    fn SHCreateItemFromParsingName(
-        pszPath: PCWSTR,
-        pbc: *mut IBindCtx,
-        riid: REFIID,
-        ppv: *mut *mut c_void
-    ) -> HRESULT;
-}
 
 macro_rules! com {
     ($com_expr:expr, $method_name:expr ) => { com(|| unsafe { $com_expr }, $method_name) };
@@ -155,6 +142,10 @@ pub struct SaveDialogResult {
 pub enum DialogError {
     /// The user cancelled the dialog
     UserCancelled,
+    /// The filepath of the selected folder or item is not supported. This occurs when the selected path
+    /// does not have the SFGAO_FILESYSTEM attribute. Selecting items without a regular filesystem path
+    /// such as "This Computer" or a file or folder within a WPD device like a phone will cause this error.
+    UnsupportedFilepath,
     /// An error occurred when showing the dialog, the HRESULT that caused the error is included.
     /// This error most commonly occurs when invalid combinations of parameters are provided
     HResultFailed {
@@ -277,13 +268,13 @@ pub fn open_dialog(params: DialogParams) -> Result<OpenDialogResult, DialogError
         CoUninitialize();
     }
 
-    let result = OpenDialogResult {
-        selected_file_path: file_paths[0].clone(),
-        selected_file_paths: file_paths,
-        selected_file_type_index: selected_filter_index,
-    };
-
-    Ok(result)
+    file_paths.iter().next().cloned().map(|x| {
+        OpenDialogResult {
+            selected_file_path: x.clone(),
+            selected_file_paths: file_paths,
+            selected_file_type_index: selected_filter_index
+        }
+    }).ok_or(DialogError::UnsupportedFilepath)
 }
 
 /// Displays a Save Dialog using the provided parameters.

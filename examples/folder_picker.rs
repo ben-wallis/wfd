@@ -10,5 +10,5 @@ fn main() {
     };
 
     let result = wfd::open_dialog(params);
-    println!("Selected Folder: {}", result.unwrap().selected_file_path.to_str().unwrap());
+    println!("{:?}", result);
 }
