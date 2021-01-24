@@ -11,7 +11,6 @@ use std::ptr::null_mut;
 use std::slice;
 
 use libc::wcslen;
-
 use winapi::{
     ctypes::c_void,
     shared::{
@@ -28,7 +27,7 @@ use winapi::{
     }
 };
 
-// Re-export File Dialog Options flags
+// Re-exports
 pub use winapi::um::shobjidl::{
     FOS_ALLNONSTORAGEITEMS, FOS_ALLOWMULTISELECT, FOS_CREATEPROMPT, FOS_DEFAULTNOMINIMODE,
     FOS_DONTADDTORECENT, FOS_FILEMUSTEXIST, FOS_FORCEFILESYSTEM, FOS_FORCEPREVIEWPANEON,
@@ -37,6 +36,7 @@ pub use winapi::um::shobjidl::{
     FOS_OVERWRITEPROMPT, FOS_PATHMUSTEXIST, FOS_PICKFOLDERS, FOS_SHAREAWARE, FOS_STRICTFILETYPES,
     FOS_SUPPORTSTREAMABLEITEMS,
 };
+pub use winapi::shared::windef::HWND;
 
 macro_rules! com {
     ($com_expr:expr, $method_name:expr ) => { com(|| unsafe { $com_expr }, $method_name) };
@@ -88,6 +88,9 @@ pub struct DialogParams<'a> {
     /// failing to open. Flags should be a combination of `FOS_*` constants, the documentation for
     /// which can be found [here](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/ne-shobjidl_core-_fileopendialogoptions)
     pub options: u32,
+    /// The HWND of the window that the dialog will be owned by. If not provided the dialog will be
+    /// an independent top-level window.
+    pub owner: Option<HWND>,
     /// The path to the existing file to use when opening a Save As dialog. Acts as a combination of
     /// `folder` and `file_name`, displaying the file name in the edit box, and selecting the
     /// containing folder as the initial folder in the dialog.
@@ -108,6 +111,7 @@ impl<'a> Default for DialogParams<'a> {
             folder: "",
             ok_button_label: "",
             options: 0,
+            owner: None,
             save_as_item: "",
             title: "",
         }
@@ -222,7 +226,7 @@ pub fn open_dialog(params: DialogParams) -> Result<OpenDialogResult, DialogError
     // Perform non open-specific dialog configuration
     configure_file_dialog(file_open_dialog, &params)?;
 
-    show_dialog(file_open_dialog)?;
+    show_dialog(file_open_dialog, params.owner)?;
 
     // Get the item(s) that the user selected in the dialog
     // IFileOpenDialog::GetResults
@@ -345,7 +349,7 @@ pub fn save_dialog(params: DialogParams) -> Result<SaveDialogResult, DialogError
     // Perform non save-specific dialog configuration
     configure_file_dialog(file_save_dialog, &params)?;
 
-    show_dialog(file_save_dialog)?;
+    show_dialog(file_save_dialog, params.owner)?;
 
     // IFileDialog::GetResult
     let mut shell_item: *mut IShellItem = null_mut();
@@ -372,9 +376,11 @@ pub fn save_dialog(params: DialogParams) -> Result<SaveDialogResult, DialogError
 
 #[allow(overflowing_literals)]
 #[allow(unused_comparisons)]
-fn show_dialog(file_dialog: &IFileDialog) -> Result<(), DialogError> {
+fn show_dialog(file_dialog: &IFileDialog, owner: Option<HWND>) -> Result<(), DialogError> {
+    let owner_hwnd = owner.unwrap_or(null_mut());
+
     // IModalWindow::Show
-    let result = com!(file_dialog.Show(null_mut()), "IModalWindow::Show");
+    let result = com!(file_dialog.Show(owner_hwnd), "IModalWindow::Show");
 
     match result {
         Ok(_) => Ok(()),
