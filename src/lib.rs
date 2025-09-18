@@ -286,7 +286,7 @@ pub fn open_dialog(params: DialogParams) -> Result<OpenDialogResult, DialogError
             continue;
         }
 
-        let file_name = get_shell_item_display_name(&shell_item)?;
+        let file_name = get_shell_item_display_name(shell_item)?;
         file_paths.push(PathBuf::from(file_name));
 
         // Free non-owned allocation
@@ -302,7 +302,7 @@ pub fn open_dialog(params: DialogParams) -> Result<OpenDialogResult, DialogError
     }
 
     file_paths
-        .get(0)
+        .first()
         .cloned()
         .map(|x| OpenDialogResult {
             selected_file_path: x,
@@ -370,7 +370,7 @@ pub fn save_dialog(params: DialogParams) -> Result<SaveDialogResult, DialogError
     let file_save_dialog = unsafe { &*file_save_dialog };
 
     // IFileDialog::SetSaveAsItem
-    if params.save_as_item != "" {
+    if !params.save_as_item.is_empty() {
         let mut item: *mut IShellItem = null_mut();
         let path = params.save_as_item.as_null_term_utf16();
         com!(
@@ -404,7 +404,7 @@ pub fn save_dialog(params: DialogParams) -> Result<SaveDialogResult, DialogError
         "IFileDialog::GetResult"
     )?;
     let shell_item = unsafe { &*shell_item };
-    let file_name = get_shell_item_display_name(&shell_item)?;
+    let file_name = get_shell_item_display_name(shell_item)?;
     unsafe { shell_item.Release() };
 
     // IFileDialog::GetFileTypeIndex
@@ -451,7 +451,7 @@ fn configure_file_dialog(
     params: &DialogParams,
 ) -> Result<(), DialogError> {
     // IFileDialog::SetDefaultExtension
-    if params.default_extension != "" {
+    if !params.default_extension.is_empty() {
         let default_extension = params.default_extension.as_null_term_utf16();
         com!(
             file_dialog.SetDefaultExtension(default_extension.as_ptr()),
@@ -460,7 +460,7 @@ fn configure_file_dialog(
     }
 
     // IFileDialog::SetDefaultFolder
-    if params.default_folder != "" {
+    if !params.default_folder.is_empty() {
         let mut default_folder: *mut IShellItem = null_mut();
         let path = params.default_folder.as_null_term_utf16();
         com!(
@@ -483,7 +483,7 @@ fn configure_file_dialog(
     }
 
     // IFileDialog::SetFolder
-    if params.folder != "" {
+    if !params.folder.is_empty() {
         let mut folder: *mut IShellItem = null_mut();
         let path = params.folder.as_null_term_utf16();
         com!(
@@ -503,7 +503,7 @@ fn configure_file_dialog(
     }
 
     // IFileDialog::SetFileName
-    if params.file_name != "" {
+    if !params.file_name.is_empty() {
         let initial_file_name = params.file_name.as_null_term_utf16();
         com!(
             file_dialog.SetFileName(initial_file_name.as_ptr()),
@@ -512,7 +512,7 @@ fn configure_file_dialog(
     }
 
     // IFileDialog::SetFileNameLabel
-    if params.file_name_label != "" {
+    if !params.file_name_label.is_empty() {
         let file_name_label = params.file_name_label.as_null_term_utf16();
         com!(
             file_dialog.SetFileNameLabel(file_name_label.as_ptr()),
@@ -533,10 +533,10 @@ fn configure_file_dialog(
     }
 
     // IFileDialog::SetOkButtonLabel
-    if params.ok_button_label != "" {
-        let ok_buttom_label = params.ok_button_label.as_null_term_utf16();
+    if !params.ok_button_label.is_empty() {
+        let ok_button_label = params.ok_button_label.as_null_term_utf16();
         com!(
-            file_dialog.SetOkButtonLabel(ok_buttom_label.as_ptr()),
+            file_dialog.SetOkButtonLabel(ok_button_label.as_ptr()),
             "IFileDialog::SetOkButtonLabel"
         )?;
     }
@@ -560,7 +560,7 @@ fn configure_file_dialog(
     }
 
     // IFileDialog::SetTitle
-    if params.title != "" {
+    if !params.title.is_empty() {
         let title = params.title.as_null_term_utf16();
         com!(
             file_dialog.SetTitle(title.as_ptr()),
