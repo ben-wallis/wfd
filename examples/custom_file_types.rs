@@ -5,7 +5,11 @@ use wfd::DialogParams;
 fn main() {
     let params = DialogParams {
         title: "Select an image to open",
-        file_types: vec![("JPG Files", "*.jpg;*.jpeg"), ("PNG Files", "*.png"), ("Bitmap Files", "*.bmp")],
+        file_types: vec![
+            ("JPG Files", "*.jpg;*.jpeg"),
+            ("PNG Files", "*.png"),
+            ("Bitmap Files", "*.bmp"),
+        ],
         // Default to PNG Files
         file_type_index: 2,
         // Specifies the default extension before the user changes the File Type dropdown. Note that

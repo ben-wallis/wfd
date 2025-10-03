@@ -4,7 +4,10 @@ use wfd::{DialogError, DialogParams, FOS_ALLOWMULTISELECT};
 
 fn main() {
     let params = DialogParams {
-        file_types: vec![("DLL Files", "*.dll"), ("Executable Files", "*.exe;*.com;*.scr")],
+        file_types: vec![
+            ("DLL Files", "*.dll"),
+            ("Executable Files", "*.exe;*.com;*.scr"),
+        ],
         default_extension: "dll",
         default_folder: r"C:\Windows\System32",
         file_name: "win32k.sys",
@@ -23,10 +26,18 @@ fn main() {
             }
         }
         Err(e) => match e {
-            DialogError::HResultFailed { hresult, error_method} => {
-                println!("HResult Failed - HRESULT: {:X}, Method: {}", hresult, error_method);
+            DialogError::HResultFailed {
+                hresult,
+                error_method,
+            } => {
+                println!(
+                    "HResult Failed - HRESULT: {:X}, Method: {}",
+                    hresult, error_method
+                );
             }
-            DialogError::UnsupportedFilepath => { println!("Unsupported file path"); }
+            DialogError::UnsupportedFilepath => {
+                println!("Unsupported file path");
+            }
             DialogError::UserCancelled => {
                 println!("User cancelled dialog");
             }
